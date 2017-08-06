@@ -123,6 +123,7 @@ function openSocket(socket){
 
 		//trilateration module, triggered every second by the socket connection:
 	setInterval(function(){
+		if(count==3){		    
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             var child = require('child_process').spawn('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
   			child.stdout.on('data', function(data) {
@@ -133,18 +134,17 @@ function openSocket(socket){
 			    var roundedX = 1.0/4*Math.floor(4*X);
 			    var roundedY = 1.0/4*Math.floor(4*Y);
 			    var loc = { x : X, y : Y};
-			    console.log("parsed location: "+loc);
-			    //console.log(roundedX + " "+roundedY);
-			    if(count==3){
-			    	console.log("sending co-ords");
+			    console.log("parsed location: "+loc.x+", "+loc.y);
+			    console.log("sending co-ords");
 			    	socket.emit('location', loc);
-			    } else{
-			    	//console.log("One or more anchors are not online")
-			    }			    
+			    //console.log(roundedX + " "+roundedY);			    			    
 			  });
 			  child.stderr.on("data", function (data) {
 			    console.log("Error from trilateration: "+data.toString());
 			  });           
-          }, 1000);
+          	}
+          else{
+              	console.log("One or more anchors are not online")
+			    } }, 1000);
 		
 }

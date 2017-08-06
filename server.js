@@ -45,8 +45,8 @@ var distances = {r1: -1000.00, r2: -1000.00, r3: -1000.00};
 var count=0;
 //manage serial port events
 
-function sendSerialData(socket) {
-	socket.on('sensor_data', function(data){
+function sendSerialData(socket1) {
+	socket1.on('sensor_data', function(data){
 		chunk += data.toString();
 		if(chunk.indexOf('\n')!=-1){
 			n_index = chunk.indexOf('\n');
@@ -126,14 +126,14 @@ function openSocket(socket){
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             var child = require('child_process').spawn('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
   			child.stdout.on('data', function(data) {
-    			//console.log(data.toString());
+    			console.log("calculated location: "+data.toString());
 			    var coord = data.toString();
 			    var X = Number(coord.substring(0,coord.indexOf(',')));
 			    var Y = Number(coord.substring(coord.indexOf(',')+2));
 			    var roundedX = 1.0/4*Math.floor(4*X);
 			    var roundedY = 1.0/4*Math.floor(4*Y);
 			    var loc = { x : X, y : Y};
-			    console.log(loc);
+			    console.log("parsed location: "+loc);
 			    //console.log(roundedX + " "+roundedY);
 			    if(count==3){
 			    	console.log("sending co-ords");
@@ -143,7 +143,7 @@ function openSocket(socket){
 			    }			    
 			  });
 			  child.stderr.on("data", function (data) {
-			    console.log(data.toString());
+			    console.log("Error from trilateration: "+data.toString());
 			  });           
           }, 1000);
 		

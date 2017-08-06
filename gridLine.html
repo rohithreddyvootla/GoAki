@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>LPS Test Graph</title>
+<style>
+
+  .axis path,
+  .axis line{
+    fill: none;
+    stroke: black;
+  }
+
+  .line{
+    fill: none;
+    stroke: blue;
+    stroke-width: 2px;
+  }
+
+  .tick text{
+    font-size: 12px;
+    text-anchor: middle;
+    opacity: 0.3;
+  }
+
+  .tick line{
+    opacity: 0.1;
+  }
+
+</style>
+</head>
+<body>
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+var margin = {top: 40, right: 40, bottom: 40, left: 40},
+    w = window.innerWidth,
+    h = window.innerHeight,
+    width = w - margin.left - margin.right,
+    height = h - margin.top - margin.bottom,
+    xDomain = 12,
+    yDomain = 12;
+
+
+
+var xScale = d3.scale.linear()
+    .domain([0, xDomain])
+    .range([0, width]);
+
+var yScale = d3.scale.linear()
+    .domain([0, yDomain])
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .tickValues([0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0, 8.25, 8.5, 8.75, 9.0, 9.25, 9.5, 9.75, 10.0, 10.25, 10.5, 10.75, 11.0, 11.25, 11.5, 11.75, 12.0])
+    .tickFormat(d3.format(",.2f"))
+    .innerTickSize(-height)
+    .outerTickSize(0)
+    .tickPadding(10);
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("left")
+    .tickValues([0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0, 8.25, 8.5, 8.75, 9.0, 9.25, 9.5, 9.75, 10.0, 10.25, 10.5, 10.75, 11.0, 11.25, 11.5, 11.75, 12.0])
+    .tickFormat(d3.format(",.2f"))
+    .innerTickSize(-width)
+    .outerTickSize(0)
+    .tickPadding(10);
+
+// var line = d3.svg.line()
+//     .x(function(d) { return xScale(d.x); })
+//     .y(function(d) { return yScale(d.y); });
+
+var circleData = [{ cx: xDomain/2, cy: yDomain/2, r: 0.05, color : "#0393f4" }];
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+  // svg.append("circle")
+  //     .style("fill", "blue")
+  //      .attr("r", 0.2*width/xDomain)
+  //      .attr("cx", 5*width/xDomain)
+  //      .attr("cy", height-5*height/yDomain);
+var circles = svg.selectAll("circle")
+            .data(circleData)
+             .enter()
+             .append("circle");
+var circleAttributes = circles
+          .attr("cx", function (d) { console.log(d.cx*width/xDomain);return d.cx*width/xDomain; })
+          .attr("cy", function (d) { console.log(height-d.cy*height/yDomain);return height-d.cy*height/yDomain; })
+          .attr("r", function (d) { return d.r*width/xDomain; })
+          .style("fill", function (d) { return d.color; });
+
+
+var socket = io.connect('http://localhost:8000');
+socket.on('connect', function(data) {
+// socket.emit('join', 'Hello World from client');
+// console.log(data);
+// });
+// socket.on('messages', function(data) {
+//     console.log(data);
+// });
+console.log('connected');
+});
+socket.on('location', function(data){
+  console.log(typeof(data.x) + " "+ typeof(data.y)+" "+data.x + " "+ data.y);
+  animateCircle(data);
+  
+});
+
+
+function animateCircle(data){
+  console.log(typeof(data.x) + " "+ typeof(data.y)+" "+data.x + " "+ data.y);
+  svg.selectAll("circle")
+      .transition()
+      .delay(500)
+       .attr("cx", function (d) { //console.log(d.cx*width/xDomain);
+        return data.x*width/xDomain; })
+       .attr("cy", function (d) { //console.log(height-d.cy*height/yDomain);
+        return height-data.y*height/yDomain; });
+
+}
+
+//console.log(CX + " " +CY);
+
+  // svg.append("path")
+  //     .data([dataset])
+  //     .attr("class", "line")
+  //     .attr("d", line);
+
+</script>
+</body>
+</html>

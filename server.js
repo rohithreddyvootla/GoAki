@@ -1,24 +1,3 @@
-
-// serial port initialization:
-//var serialport = require('serialport');			// include the serialport library
-	//SerialPort  = serialport.SerialPort;			// make a local instance of serial
-	// portName = process.argv[2];
-	// var myPort = new serialport(portName, {
- //   	    baudRate: 115200,
-	//    //dataBits: 8,
-	//    //parity: 'none',
-	//    //stopBits: 1,
-	//    //flowControl: false,
-	//    parser: serialport.parsers.readline("\n")
-	//    //parser: serialport.parsers.raw
-	// });								// get the port name from the command line
-
-// myPort.on('open', showPortOpen);
-// myPort.on('data', sendSerialData);
-// //myPort.on('close', showPortClose);
-// myPort.on('error', showError);
-
-// // server initialization:
 var express = require('express');		// include express.js
 	//io1 = require('socket.io');				// include socket.io
 	app = express();									// make an instance of express.js
@@ -45,8 +24,8 @@ var distances = {r1: -1000.00, r2: -1000.00, r3: -1000.00};
 var count=0;
 //manage serial port events
 
-function sendSerialData(socket1) {
-	socket1.on('sensor_data', function(data){
+function sendSerialData(sensorSocket) {
+	sensorSocket.on('sensor_data', function(data){
 		chunk += data.toString();
 		if(chunk.indexOf('\n')!=-1){
 			n_index = chunk.indexOf('\n');
@@ -134,7 +113,7 @@ function openSocket(socket){
 			    var roundedX = 1.0/4*Math.floor(4*X);
 			    var roundedY = 1.0/4*Math.floor(4*Y);
 			    var loc = { x : X, y : Y};
-			    console.log("parsed location: "+loc.x+", "+loc.y);
+			    console.log("parsed location: "+typeof(loc.x)+ ": "+ loc.x+", "+ typeof(loc.y) +": "+loc.y);
 			    console.log("sending co-ords");
 			    	socket.emit('location', loc);
 			    //console.log(roundedX + " "+roundedY);			    			    
@@ -145,6 +124,6 @@ function openSocket(socket){
           	}
           else{
               	console.log("One or more anchors are not online")
-			    } }, 2000);
+			    } }, 1000);
 		
 }

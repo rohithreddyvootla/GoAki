@@ -11,7 +11,6 @@
   "dependencies": {
     "express": "^4.15.3",
     "jquery": "^3.2.1",
-    "nearley": "^2.10.1",
     "serialport": "^4.0.7",
     "socket.io": "^2.0.3"
   }

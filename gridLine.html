@@ -106,7 +106,7 @@ var circleAttributes = circles
           .style("fill", function (d) { return d.color; });
 
 
-var socket = io.connect('http://localhost:8000');
+var socket = io.connect('http://ec2-54-67-48-199.us-west-1.compute.amazonaws.com:8000');
 socket.on('connect', function(data) {
 // socket.emit('join', 'Hello World from client');
 // console.log(data);

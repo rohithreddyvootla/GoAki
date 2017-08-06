@@ -122,7 +122,8 @@ function openSocket(socket){
 	});*/
 
 		//trilateration module, triggered every second by the socket connection:
-	setInterval(function(){            
+	setInterval(function(){
+			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             var child = require('child_process').spawn('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
   			child.stdout.on('data', function(data) {
     			//console.log(data.toString());

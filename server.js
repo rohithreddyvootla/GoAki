@@ -14,7 +14,7 @@ var express = require('express');		// include express.js
 	
 
 	
-var count=0;
+var count1=0,count2 = 0,count3=0;
 var chunk = '';
 // function showPortOpen() {
 //    console.log('port open. Data rate: ' + myPort.options.baudRate);
@@ -29,18 +29,35 @@ function sendSerialData(sensorSocket) {
 		chunk += data.toString();
 		if(chunk.indexOf('\n')!=-1){
 			n_index = chunk.indexOf('\n');
-			var idata = chunk.substring(0, n_index);
+			var idata = chunk.substring(0, n_index+1);
 			chunk = chunk.substring(n_index+1);
 			console.log("New data event: "+idata);
 			var device_added = "ranging init; 1 device added ! ->  short:",
 				device_removed = "delete inactive device: ";
 			
 			if(idata.indexOf(device_added)!=-1){
-				count++;
+				var device_id = idata.substr(idata.indexOf(':')+1, 4);
+				if(device_id==="ACE1"){
+					if(count1==0)	count1++; 
+				} else if(device_id==="ACE2"){
+					if(count2==0)	count2++;
+				} else {
+					if(count3==0)	count3++;
+				}
+
+				//count++;
 				//distances[data.subString(device_added.length())] = ;
 			}
 			if(idata.indexOf(device_removed)!=-1){
-				count--;
+				var deleted_device_id = idata.substr(idata.indexOf(':')+2, 4);
+				if(deleted_device_id==="ACE1"){
+					if(count1>0)	count1--; 
+				} else if(deleted_device_id==="ACE2"){
+					if(count2>0)	count2--;
+				} else {
+					if(count3>0)	count3--;
+				}
+				//count--;
 				//distances.splice(devices.indexOf(data.subString(device_removed.length())));
 			}
 			if(idata.indexOf('from')!=-1) {
@@ -102,7 +119,7 @@ function openSocket(socket){
 
 		//trilateration module, triggered every second by the socket connection:
 	setInterval(function(){
-		if(count==3){		    
+		if(count1==1 && count2==1 && count3==1){		    
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             var child = require('child_process').spawn('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
   			child.stdout.on('data', function(data) {

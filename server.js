@@ -145,6 +145,6 @@ function openSocket(socket){
           	}
           else{
               	console.log("One or more anchors are not online")
-			    } }, 1000);
+			    } }, 2000);
 		
 }

@@ -121,27 +121,28 @@ function openSocket(socket){
 	setInterval(function(){
 		if(count1==1 && count2==1 && count3==1){		    
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
-            var child = require('child_process').spawnSync('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
-  			if(!child.stderr){
-  				var data = child.stdout;  			
-    			console.log("calculated location: "+data.toString());
-			    var coord = data.toString();
-			    var X = Number(coord.substring(0,coord.indexOf(',')));
-			    var Y = Number(coord.substring(coord.indexOf(',')+2));
-			    var roundedX = 1.0/4*Math.floor(4*X);
-			    var roundedY = 1.0/4*Math.floor(4*Y);
-			    var loc = { x : X, y : Y};
-			    console.log("parsed location: "+typeof(loc.x)+ ": "+ loc.x+", "+ typeof(loc.y) +": "+loc.y);
-			    console.log("sending co-ords");
-			    socket.emit('location', loc);
-			    //console.log(roundedX + " "+roundedY);			    			    
-			  }
-			  else{
-			    console.log(child.stderr);
-			  } 
-  			}			        	
+            //var child = require('child_process').spawnSync('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
+  			var child = require('child_process').exec('java -jar Trilateration.jar distances.r1 distances.r2 distances.r3 process.argv[2] process.argv[3] process.argv[4]', function(error, stdout, stderr) {
+				if(!error){			
+					console.log("calculated location: "+stdout.toString());
+				    var coord = stdout.toString();
+				    var X = Number(coord.substring(0,coord.indexOf(',')));
+				    var Y = Number(coord.substring(coord.indexOf(',')+2));
+				    var roundedX = 1.0/4*Math.floor(4*X);
+				    var roundedY = 1.0/4*Math.floor(4*Y);
+				    var loc = { x : X, y : Y};
+				    console.log("parsed location: "+typeof(loc.x)+ ": "+ loc.x+", "+ typeof(loc.y) +": "+loc.y);
+				    console.log("sending co-ords");
+				    //socket.emit('location', loc);
+				    //console.log(roundedX + " "+roundedY);			    			    
+				}
+				else{
+				    console.log("Error: " + error);
+				}
+			});
+  		}			        	
         else{
           		console.log("One or more anchors are not online")
-		    } }, 1000);
-		
+		    } 
+	}, 1000);		
 }

@@ -133,7 +133,7 @@ function openSocket(socket){
 				    var loc = { x : X, y : Y};
 				    console.log("parsed location: "+typeof(loc.x)+ ": "+ loc.x+", "+ typeof(loc.y) +": "+loc.y);
 				    console.log("sending co-ords");
-				    //socket.emit('location', loc);
+				    socket.emit('location', loc);
 				    //console.log(roundedX + " "+roundedY);			    			    
 				}
 				else{

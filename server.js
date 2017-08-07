@@ -122,7 +122,7 @@ function openSocket(socket){
 		if(count1==1 && count2==1 && count3==1){		    
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             //var child = require('child_process').spawnSync('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
-  			var child = require('child_process').exec('java -jar Trilateration.jar distances.r1 distances.r2 distances.r3 process.argv[2] process.argv[3] process.argv[4]', function(error, stdout, stderr) {
+  			var child = require('child_process').exec(`java -jar Trilateration.jar ${distances.r1} ${distances.r2} ${distances.r3} ${process.argv[2]} ${process.argv[3]} ${process.argv[4]}`, function(error, stdout, stderr) {
 				if(!error){			
 					console.log("calculated location: "+stdout.toString());
 				    var coord = stdout.toString();

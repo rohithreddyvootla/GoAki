@@ -122,7 +122,8 @@ function openSocket(socket){
 		if(count1==1 && count2==1 && count3==1){		    
 			console.log("r1:"+" "+distances.r1+" "+"r2: "+" "+distances.r2+" "+"r3: "+" "+distances.r3);           
             var child = require('child_process').spawnSync('java', ['-jar', 'Trilateration.jar', distances.r1, distances.r2, distances.r3, process.argv[2], process.argv[3], process.argv[4]]);
-  			child.stdout.on('data', function(data) {
+  			if(!child.stderr){
+  				var data = child.stdout;  			
     			console.log("calculated location: "+data.toString());
 			    var coord = data.toString();
 			    var X = Number(coord.substring(0,coord.indexOf(',')));
@@ -132,15 +133,15 @@ function openSocket(socket){
 			    var loc = { x : X, y : Y};
 			    console.log("parsed location: "+typeof(loc.x)+ ": "+ loc.x+", "+ typeof(loc.y) +": "+loc.y);
 			    console.log("sending co-ords");
-			    	socket.emit('location', loc);
+			    socket.emit('location', loc);
 			    //console.log(roundedX + " "+roundedY);			    			    
-			  });
-			  child.stderr.on("data", function (data) {
-			    console.log("Error from trilateration: "+data.toString());
-			  });           
-          	}
-          else{
-              	console.log("One or more anchors are not online")
-			    } }, 1000);
+			  }
+			  else{
+			    console.log(child.stderr);
+			  } 
+  			}			        	
+        else{
+          		console.log("One or more anchors are not online")
+		    } }, 1000);
 		
 }

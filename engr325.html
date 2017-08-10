@@ -251,7 +251,7 @@
         var pathFunction = d3.svg.line()
                           .x(function(d) { return xScale((d[0]/4)+0.125); })
                           .y(function(d) { return yScale(((yDomain*4-d[1])/4)-0.125); })
-                          .interpolate("cardinal");
+                          .interpolate("linear");
         function Clear(){
             console.log("Here");
             directions_flag = 0;            

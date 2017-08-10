@@ -1,0 +1,429 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<meta charset="UTF-8">
+  	<title>Demo Layout</title>
+	<style>
+  		.axis path,
+  		.axis line{
+	    fill: none;
+	    stroke-width: 1;
+	    stroke: black;
+	  }
+	  .tick text{
+	    font-size: 12px;
+	    text-anchor: middle;
+	    opacity: 0.3;
+	  }
+	  path { 
+		    stroke: rgba(139, 195, 74, 0.48);
+		    stroke-width: 12;
+		    fill: none;
+		}
+	  .tick line{
+	    opacity: 0.05;
+	  }
+
+	  .svg text {
+		  fill: white;
+		  font: 10px sans-serif;
+		  text-anchor: middle;
+		}
+	  .pure-button{
+            color: white;
+            border-radius: 4px;
+            margin      : 0;
+           text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+        }
+      .directions {
+            background: rgb(66, 184, 221); 
+        }
+
+      .clear {
+            background: rgb(202, 60, 60); 
+        }
+
+      .navigation 
+      	{
+            background: rgb(66, 184, 221); 
+        }
+
+        .icon-bar {
+    width: 40px; /* Set a specific width */
+    background-color: #555; /* Dark-grey background */
+	}
+
+	.icon-bar a {
+	    display: block; /* Make the links appear below each other instead of side-by-side */
+	    text-align: center; /* Center-align text */
+	    padding: 16px; /* Add some padding */
+	    transition: all 0.3s ease; /* Add transition for hover effects */
+	    color: white; /* White text color */
+	    font-size: 12px; /* Increased font-size */
+	}
+
+	.icon-bar a:hover {
+	    background-color: #000; /* Add a hover color */
+	}
+
+	.active {
+	    background-color: #4CAF50; /* Add an active/current color */
+	}
+
+	</style>
+</head>
+<body>
+	 <div id="menu">
+	    <input class = "pure-button directions"
+	    	   id="directions" 
+	           type="button" 
+	           value="Get Directions" 
+	           onclick="getDirections()"
+	           />
+	    <input class = "pure-button clear"
+	    		id="clear" 
+	           type="button" 
+	           value="Clear" 
+	           onclick="Clear()"
+	           />
+	    <input class = "pure-button navigation"
+	    		id="navigation" 
+	           type="button" 
+	           value="Start Navigation" 
+	           onclick="startNav()"
+	           />
+	 
+
+	</div> 
+	<!-- <div class="icon-bar">
+	  <a class="active" href="#"><i class="fa fa-home"></i></a> 
+	  <a href="#"><i class="fa fa-search"></i></a> 
+	  <a href="#"><i class="fa fa-envelope"></i></a> 
+	  <a href="#"><i class="fa fa-globe"></i></a>
+	  <a href="#"><i class="fa fa-trash"></i></a> 
+	</div> -->
+<!-- 	<div class="w3-sidebar w3-bar-block icon-bar">
+	 <button onclick="w3_close()" class="w3-bar-item w3-large" id="mySidebar">Close &times;</button> 
+	  <a href="#" class="w3-bar-item w3-button">Link 1</a>
+	  <a href="#" class="w3-bar-item w3-button">Link 2</a>
+	  <a href="#" class="w3-bar-item w3-button">Link 3</a>
+	</div>
+	<div class = "layout" style="margin-left:40px">
+		<button class="w3-button w3-teal w3-xlarge" onclick="w3_open()">☰</button>
+	</div>
+	<div class="w3-teal">
+	  <button class="w3-button w3-teal w3-xlarge" onclick="w3_open()">☰</button>
+	  <div class="layout">
+	  </div>
+	</div> -->
+	<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+	<script src="http://d3js.org/d3.v3.js"></script>
+	<script type="text/javascript" src="pathfinding-bower-0.4.18/pathfinding-browser.min.js"></script>
+	<script>
+		//-121.8815,37.3368,18
+		// console.log(path);
+		function w3_open() {
+	    document.getElementById("mySidebar").style.display = "block";
+		}
+		function w3_close() {
+		    document.getElementById("mySidebar").style.display = "none";
+		}
+		var CX=0, CY=0;
+		var margin = {top: 40, right: 40, bottom: 40, left: 40},
+		    w = window.innerWidth,
+		    h = window.innerHeight,
+		    width = w - margin.left - margin.right,
+		    height = h - margin.top - margin.bottom,
+		    xDomain = 8.5,
+		    yDomain = 12;
+		//console.log(h+" "+w)
+		var grid = new PF.Grid(xDomain*4, yDomain*4);
+		var xScale = d3.scale.linear()
+		    .domain([0, xDomain])
+		    .range([0, width]);
+
+		var yScale = d3.scale.linear()
+		    .domain([0, yDomain])
+		    .range([height, 0]);
+
+		var xAxis = d3.svg.axis()
+		    .scale(xScale)
+		    .orient("bottom")
+		    //.ticks(1.0/4*Math.floor(4*xDomain*4))
+		    .tickValues([0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0, 8.25, 8.5])//, 8.75, 9.0, 9.25, 9.5, 9.75, 10.0, 10.25, 10.5, 10.75, 11.0, 11.25, 11.5, 11.75, 12.0])
+		    .tickFormat(d3.format(",.2f"))
+		    .innerTickSize(-height)
+		    .outerTickSize(0)
+		    .tickPadding(10);
+
+		var yAxis = d3.svg.axis()
+		    .scale(yScale)
+		    .orient("left")
+		    //.ticks(1.0/4*Math.floor(4*yDomain*4))
+		    .tickValues([0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0, 5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0, 8.25, 8.5, 8.75, 9.0, 9.25, 9.5, 9.75, 10.0, 10.25, 10.5, 10.75, 11.0, 11.25, 11.5, 11.75, 12.0])
+		    .tickFormat(d3.format(",.2f"))
+		    .innerTickSize(-width)
+		    .outerTickSize(0)
+		    .tickPadding(10);
+		//190, 62, 15
+		//152.4, 61, 60.5 12, 10.13
+
+		var svg = d3.select("body").append("svg")
+		    .attr("width", w)
+		    .attr("height", h)
+		  .append("g")
+		    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+      	svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+		var side_TV = [4.55, 7, 9.65];
+		for(var i=0; i<side_TV.length; i++){
+			svg.append("rect")
+		            .attr("x", xScale(8.4))
+		            .attr("y", yScale(side_TV[i]))
+		            .attr("width",xScale(0.10))
+		            .attr("height", 1.25*height/yDomain)
+		            .style("fill", "black");		            
+		}
+		var TV = svg.append("rect")
+		            .attr("x", xScale(2.8))
+		            .attr("y", yScale(0.15))
+		            .attr("width",xScale(2))
+		            .attr("height", 0.15*height/yDomain)
+		            .style("fill", "black");
+
+		// for(var i=0; i<table331X.length; i++){
+		// 	for(var j=0; j<table331Y.length; j++){
+		// 		svg.append("rect")
+		//             .attr("x", table331X[i]*width/xDomain)
+		//             .attr("y", table331Y[j]*height/yDomain)
+		//             .attr("width",tableWidth*width/xDomain)
+		//             .attr("height", tableHeight*height/yDomain )
+		//             .style("fill", "rgba(255, 190, 7, 0.71)");
+		//         for(var g_i=table331X[i]*4-1; g_i<(table331X[i]+tableWidth)*4+1; g_i++){
+		//         	for(var g_j=table331Y[j]*4; g_j<(table331Y[j]+tableHeight)*4; g_j++){
+		//         		if(g_i>=0&&g_i<xDomain*4)
+		//         			grid.setWalkableAt(g_i, g_j, false);
+		//         		//console.log(g_i+", "+g_j);
+		//         // 		svg.append("text")
+		// 				    // .attr("x", ((g_i+1)/4)*width/xDomain)
+		// 				    // .attr("y", ((g_j+1)/4)*height/yDomain)
+		// 				    // //.attr("dy", ".35em")
+		// 				    // .text("1");
+		//         	}
+		//         }
+		// 	}
+		// }
+
+		// for(var i=0; i<chair331X.length; i++){
+		// 	for(var j=0; j<chair331Y.length; j++){
+		// 		svg.append("rect")
+		//     		.attr("x", chair331X[i]*width/xDomain)
+		//     		.attr("y", chair331Y[j]*height/yDomain)
+		//     		.attr("width", chair*width/xDomain)
+		//     		.attr("height", chair*height/yDomain)
+		//     		.style("fill", "blue");
+		//     	for(var g_i=chair331X[i]*4; g_i<(chair331X[i]+chair)*4; g_i++){
+		//         	for(var g_j=chair331Y[j]*4; g_j<(chair331Y[j]+chair)*4; g_j++){
+		//         		grid.setWalkableAt(g_i, g_j, false);
+		//         		if(g_i>=1&&g_i<47){
+		//         			grid.setWalkableAt(g_i-1, g_j, false);
+		//         			grid.setWalkableAt(g_i+1, g_j, false);
+		//         			//console.log(g_i+", "+g_j);
+		//         		}
+		//         // 			svg.append("text")
+		// 				    // .attr("x", (g_i/4)*width/xDomain)
+		// 				    // .attr("y", (g_j/4)*height/yDomain)
+		// 				    // //.attr("dy", ".35em")
+		// 				    // .text("1");
+		//         	}
+		//         }
+		// 	}
+		// }
+
+
+		
+		var circleData = [{ cx: xDomain/2, cy: yDomain/2, r: 0.1, color : "#8bc34a" }];
+		var current_position = svg.selectAll("circle")
+		            .data(circleData)
+		             .enter()
+		             .append("circle");
+		var circleAttributes = current_position
+		          .attr("cx", function (d) { return (d.cx)*width/xDomain; })
+		          .attr("cy", function (d) { return height-d.cy*height/yDomain; })
+		          .attr("r", function (d) { return d.r*width/xDomain; })
+		          .style("fill", function (d) { return d.color; });
+
+		var socket = io.connect('http://localhost:8000');
+		socket.on('connect', function(data) {
+		//socket.emit('join', 'Hello World from client');
+		console.log(data);
+		});
+		// socket.on('messages', function(data) {
+		//     console.log(data);
+		// });
+		socket.on('location', function(data){
+		  console.log(typeof(data.x) + " "+ typeof(data.y)+" "+data.x + " "+ data.y);
+		  animateCircle(data);
+		  
+		});
+
+		var destination = svg.append("circle")
+            .attr('class', 'dest')
+            .attr("cx", xScale(15))
+            .attr("cy", yScale(15))
+            .attr("r", (0.05)*width/xDomain)
+            .style("fill", "red");
+
+		//d3.select("body")
+		svg.on("click", function() {
+          var coords = d3.mouse(this);
+          //drawCircle(coords[0], coords[1], 0.1);          
+          destination
+		      .transition()
+		      //.delay(1500)
+		     .attr("cx", 1.0/4*Math.floor((coords[0])*4))
+             .attr("cy", 1.0/4*Math.floor((coords[1])*4));
+        });
+		function animateCircle(data){
+		  		//console.log(typeof(data.x) + " "+ typeof(data.y)+" "+data.x + " "+ data.y);
+		  	current_position	
+		      .transition()
+		      .delay(500)
+		       .attr("cx", function (d) { //console.log(d.cx*width/xDomain);
+		        return data.x*width/xDomain; })
+		       .attr("cy", function (d) { //console.log(height-d.cy*height/yDomain);
+		        return height-data.y*height/yDomain; });
+
+		}
+		responsiveVoice.speak("Welcome to indoor navigation system");           
+		var directions_flag = 0;
+		var path, shortPath;
+		var pathFunction = d3.svg.line()
+                          .x(function(d) { return xScale((d[0]/4)+0.125); })
+                          .y(function(d) { return yScale(((yDomain*4-d[1])/4)-0.125); })
+                          .interpolate("linear");
+        function Clear(){
+        	console.log("Here");
+        	directions_flag = 0;        	
+        	svg.selectAll("path").remove();
+        	destination.transition()
+        	.attr("cx", xScale(15))
+        	.attr("cy", yScale(15));
+        }
+		function getDirections(){
+    		//console.log(1.0/4*Math.floor((xScale.invert(destination.attr("cx")))*4)+" "+1.0/4*Math.floor((yScale.invert(destination.attr("cy")))*4));
+    		var cur_x = 1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4);
+    		var cur_y = 1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4);
+    		var dest_x = 1.0/4*Math.floor((xScale.invert(destination.attr("cx")))*4);
+    		var dest_y = 1.0/4*Math.floor((yScale.invert(destination.attr("cy")))*4);
+    		var grid1 = grid.clone();
+    		console.log(cur_x*4 + ", "+ ((yDomain*4)-cur_y*4-1));
+    		console.log(dest_x*4 + ", "+((yDomain*4)-dest_y*4));
+    		var finder = new PF.AStarFinder({
+							    diagonalMovement: PF.DiagonalMovement.Never,
+							    heuristic: PF.Heuristic.euclidian
+							});
+
+    		// var finder = new PF.IDAStarFinder({
+						// 	    diagonalMovement: PF.DiagonalMovement.Never,
+						// 	    heuristic: PF.Heuristic.octile
+						// 	});
+			path = finder.findPath(cur_x*4, (yDomain*4)-cur_y*4-1 , dest_x*4, (yDomain*4)-dest_y*4-1, grid1);
+			shortPath = PF.Util.smoothenPath(grid1, path);
+			svg.selectAll("path").remove();			
+            var pathGraph = svg.append("path")
+                            	.attr("d", pathFunction(path));
+            directions_flag = 1
+			console.log(path.toString());
+			console.log(shortPath.toString());
+    	}
+
+        function startNav() {
+        	responsiveVoice.speak("Start Navigation");
+    		var navPath = path;
+    		if(directions_flag!=0){
+    			var updatePath = setInterval(function(){
+										    var curr = [(1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4))*4, (yDomain*4)-(1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4))*4-1]
+										    navPath.splice(0, 1, curr);
+										    var next = navPath[1];
+										    console.log()
+										    if(navPath.length>1){
+										    	if((curr[0]>=next[0]-2&&curr[0]<=next[0]+2)&&(curr[1]>=next[1]-2&&curr[1]<=next[1]+2)&&navPath.length>2){
+										    		navPath.splice(1,1);
+										    	}
+										    }										    
+										    svg.selectAll("path").remove();			
+							            	var pathGraph = svg.append("path")
+							                            		.attr("d", pathFunction(navPath));
+										    if(navPath.length <= 2){
+										    	if((navPath[0][0]>=navPath[1][0]-1&&navPath[0][0]<=navPath[1][0]+1)&&(navPath[0][1]>=navPath[1][1]-1&&navPath[0][1]<=navPath[1][1]+1))
+										        clearInterval(updatePath);
+										        svg.selectAll("path").remove();	
+										    }
+
+										    if(directions_flag == 0){
+										    	svg.selectAll("path").remove();	
+										        clearInterval(updatePath);										        
+										    }
+										     
+										}, 500);
+    // 			var isFinished = false;
+				// var index = 0;
+				// while(!isFinished){
+					
+				// 	var diffx = (curr[0] - shortPath[index].x);
+				// 	var diffy = (curr[1] - shortPath[index].y);
+					
+				// 	var adiffx = Math.abs(diffx);
+				// 	var adiffy = Math.abs(diffy);
+					
+				// 	//Difference in X is greater than the difference in Y. Therefore go RIGHT/LEFT
+				// 	if (adiffx > adiffy){
+				// 		//Tag.x value is bigger than the targeted location value, therefore go LEFT
+				// 		if (diffx > 0){
+				// 			console.log("GO LEFT");
+				// 			responsiveVoice.speak("turn left");
+				// 		}
+				// 		else{
+				// 			console.log("GO RIGHT");
+				// 			responsiveVoice.speak("turn right");
+				// 		}
+				// 	}
+					
+				// 	//Difference in Y is greater than the difference in X. Therefore go UP/DOWN
+				// 	else{
+				// 		//Tag.y value is bigger than the targeted location value, therefore go DOWN
+				// 		if (diffy > 0){
+				// 			console.log("GO DOWN");
+				// 			responsiveVoice.speak("Go forward")
+				// 		}
+				// 		else{
+				// 			console.log("GO backward");
+				// 			responsiveVoice.speak("go backward");
+				// 		}
+				// 	}
+					
+				// 	//Increment index if it is within plus or minus 1 unit in x or y direction
+				// 	if(adiffx <= 2 && adiffy <= 2){
+				// 		index ++;
+				// 	}
+					
+				// 	//If index is last element of the array, then your tag is at the end point and navigation is done
+				// 	if( (index+1) == shortPath.length){
+				// 		isFinished = true;
+				// 	}
+				// }     
+    		}			  	
+    	}        
+
+	</script>
+
+</body>
+</html>

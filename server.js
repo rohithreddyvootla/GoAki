@@ -99,6 +99,9 @@ app.get('/demo', function(req, res, next) {
     res.sendFile(__dirname + '/engr325.html');
 });
 
+app.get('/demo1', function(req, res, next) {  
+    res.sendFile(__dirname + '/487.html');
+});
 
 
 

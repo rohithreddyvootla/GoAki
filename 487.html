@@ -119,10 +119,13 @@
 	</div> -->
 	<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
 	<script src="http://d3js.org/d3.v3.js"></script>
-	<script src="socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="pathfinding-browser.min.js"></script>
+	<script type="text/javascript" src="pathfinding-bower-0.4.18/pathfinding-browser.min.js"></script>
 	<script>
 		//-121.8815,37.3368,18
+		//70
+		//5*6
+		//107, 61, 
+		//chair: 60 60 
 		// console.log(path);
 		function w3_open() {
 	    document.getElementById("mySidebar").style.display = "block";
@@ -261,7 +264,7 @@
 		          .attr("r", function (d) { return d.r*width/xDomain; })
 		          .style("fill", function (d) { return d.color; });
 
-		var socket = io.connect('http://ec2-54-67-48-199.us-west-1.compute.amazonaws.com:8000');
+		var socket = io.connect('http://localhost:8000');
 		socket.on('connect', function(data) {
 		//socket.emit('join', 'Hello World from client');
 		console.log(data);
@@ -303,13 +306,50 @@
 		        return height-data.y*height/yDomain; });
 
 		}
-		responsiveVoice.speak("Welcome to indoor navigation system");           
+		//responsiveVoice.speak("Welcome to indoor navigation system");           
 		var directions_flag = 0;
-		var path, shortPath;
+		var path, shortPath, dirPath;
 		var pathFunction = d3.svg.line()
                           .x(function(d) { return xScale((d[0]/4)+0.125); })
                           .y(function(d) { return yScale(((yDomain*4-d[1])/4)-0.125); })
                           .interpolate("linear");
+        function determine_direction(coord1, coord2, coord3, index){
+        	//console.log(coord1+" "+coord2+" "+coord3);
+        	var R = "Right", L = "Left";
+        	var x1 = coord1[0], x2 = coord2[0], x3 = coord3[0];
+        	var y1 = coord1[1], y2 = coord2[1], y3 = coord3[1];
+        	if(x1<x2){
+        		if(y2<y3){
+        			dirPath[index] = R;
+        		}
+        		if(y2>y3){
+        			dirPath[index] = L;
+        		}
+        	} else if(x1>x2){
+        		if(y2<y3){
+        			dirPath[index] = L;
+        		}
+        		if(y2>y3){
+        			dirPath[index] = R;
+        		}
+        	} else if(y1>y2){
+        		if(x2<x3){
+        			dirPath[index] = R;
+        		}
+        		if(x2>x3){
+        			dirPath[index] = L;
+        		}
+        	} else if(y1<y2){
+        		if(x2<x3){
+        			dirPath[index] = L;
+        		}
+        		if(x2>x3){
+        			dirPath[index] = R;
+        		}
+        	} else{
+        		console.log("Exception");
+        	}
+        }	
         function Clear(){
         	console.log("Here");
         	directions_flag = 0;        	
@@ -341,30 +381,44 @@
 			svg.selectAll("path").remove();			
             var pathGraph = svg.append("path")
                             	.attr("d", pathFunction(path));
-            directions_flag = 1
+            directions_flag = 1;
+            dirPath = Array(path.length).fill("N");
+            for(var i=0; i<path.length-2; i++) {
+            	determine_direction(path[i], path[i+1], path[i+2], i+1);
+            }
+            console.log(dirPath);
 			console.log(path.toString());
 			console.log(shortPath.toString());
     	}
 
         function startNav() {
-        	responsiveVoice.speak("Start Navigation");
+        	responsiveVoice.speak("Move Forward");
     		var navPath = path;
+    		var index=1;
     		if(directions_flag!=0){
     			var updatePath = setInterval(function(){
-										    var curr = [(1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4))*4, (yDomain*4)-(1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4))*4-1]
-										    navPath.splice(0, 1, curr);
-										    var next = navPath[1];
-										    console.log()
-										    if(navPath.length>1){
-										    	if((curr[0]>=next[0]-2&&curr[0]<=next[0]+2)&&(curr[1]>=next[1]-2&&curr[1]<=next[1]+2)&&navPath.length>2){
-										    		navPath.splice(1,1);
-										    	}
-										    }										    
+										    var curr = [(1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4))*4, (yDomain*4)-(1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4))*4-1];	
+										    //if((curr[0]>=navPath[0][0]-4&&curr[3]<=navPath[0][0]+4)&&(curr[1]>=navPath[0][1]-4&&curr[1]<=navPath[0][1]+4)){
+										    		navPath.splice(0, 1, curr);
+										    	//}
 										    svg.selectAll("path").remove();			
 							            	var pathGraph = svg.append("path")
 							                            		.attr("d", pathFunction(navPath));
+										    var next = navPath[1];										    										    
+										    if(navPath.length>2){
+										    	if((curr[0]>=next[0]-2&&curr[0]<=next[0]+2)&&(curr[1]>=next[1]-2&&curr[1]<=next[1]+2)){
+										    		if(index<path.length-2&&dirPath[index+1]!="N"){
+										    			console.log(dirPath[index+1]);
+										    			responsiveVoice.speak("Turn" + dirPath[index+1]);
+										    		}										    		
+										    		navPath.splice(1,1);
+										    		index++;
+										    		console.log(dirPath[index]);							    												    		
+										    	}
+										    }									    
 										    if(navPath.length <= 2){
 										    	if((navPath[0][0]>=navPath[1][0]-1&&navPath[0][0]<=navPath[1][0]+1)&&(navPath[0][1]>=navPath[1][1]-1&&navPath[0][1]<=navPath[1][1]+1))
+										    	responsiveVoice.speak("You have reached your destination");
 										        clearInterval(updatePath);
 										        svg.selectAll("path").remove();	
 										    }
@@ -374,53 +428,7 @@
 										        clearInterval(updatePath);										        
 										    }
 										     
-										}, 500);
-    // 			var isFinished = false;
-				// var index = 0;
-				// while(!isFinished){
-					
-				// 	var diffx = (curr[0] - shortPath[index].x);
-				// 	var diffy = (curr[1] - shortPath[index].y);
-					
-				// 	var adiffx = Math.abs(diffx);
-				// 	var adiffy = Math.abs(diffy);
-					
-				// 	//Difference in X is greater than the difference in Y. Therefore go RIGHT/LEFT
-				// 	if (adiffx > adiffy){
-				// 		//Tag.x value is bigger than the targeted location value, therefore go LEFT
-				// 		if (diffx > 0){
-				// 			console.log("GO LEFT");
-				// 			responsiveVoice.speak("turn left");
-				// 		}
-				// 		else{
-				// 			console.log("GO RIGHT");
-				// 			responsiveVoice.speak("turn right");
-				// 		}
-				// 	}
-					
-				// 	//Difference in Y is greater than the difference in X. Therefore go UP/DOWN
-				// 	else{
-				// 		//Tag.y value is bigger than the targeted location value, therefore go DOWN
-				// 		if (diffy > 0){
-				// 			console.log("GO DOWN");
-				// 			responsiveVoice.speak("Go forward")
-				// 		}
-				// 		else{
-				// 			console.log("GO backward");
-				// 			responsiveVoice.speak("go backward");
-				// 		}
-				// 	}
-					
-				// 	//Increment index if it is within plus or minus 1 unit in x or y direction
-				// 	if(adiffx <= 2 && adiffy <= 2){
-				// 		index ++;
-				// 	}
-					
-				// 	//If index is last element of the array, then your tag is at the end point and navigation is done
-				// 	if( (index+1) == shortPath.length){
-				// 		isFinished = true;
-				// 	}
-				// }     
+										}, 1000);
     		}			  	
     	}        
 

@@ -107,6 +107,7 @@ app.get('/demo1', function(req, res, next) {
 
 
 
+
 //setup the socket event listeners
 
 function openSocket(socket){
@@ -145,7 +146,13 @@ function openSocket(socket){
 			});
   		}			        	
         else{
-          		console.log("One or more anchors are not online")
+          		if(count1!=1){
+          			console.log("Anchor1 is not online");
+          		} else if (count2!=1){
+          			console.log("Anchor2 is not online");
+          		}else{
+          			console.log("Anchor3 is not online");
+          		}
 		    } 
 	}, 1000);		
 }

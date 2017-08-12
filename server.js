@@ -89,10 +89,14 @@ socketServer.on('connection', sendSerialData);
 
 
 //  set up server and socketServer listener functions:
+//app.use(express.static(__dirname));
 app.use(express.static(__dirname + '/node_modules'));
 app.use(express.static(__dirname + '/pathfinding-bower-0.4.18'));					
 
 app.get('/', function(req, res, next) {  
+    res.sendFile(__dirname + '/sjsu.html');
+});
+app.get('/test', function(req, res, next) {  
     res.sendFile(__dirname + '/gridLine.html');
 });
 app.get('/demo', function(req, res, next) {  

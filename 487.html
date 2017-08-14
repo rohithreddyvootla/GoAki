@@ -192,7 +192,15 @@
 		            .attr("y", yScale(side_TV[i]))
 		            .attr("width",xScale(0.10))
 		            .attr("height", 1.25*height/yDomain)
-		            .style("fill", "black");		            
+		            .style("fill", "black");
+		    svg.append("text")
+		    	.attr('x', xScale(8.4))
+		    	.attr('y', height-yScale(side_TV[i]-2.5))
+		    	.attr('dy', "0.35em")
+		    	// .attr("transform", function(d) {
+       //          return "rotate(180)" 
+       //          })
+		    	.text("TV"+(i+1));		            
 		}
 		var TV = svg.append("rect")
 		            .attr("x", xScale(2.8))
@@ -200,19 +208,30 @@
 		            .attr("width",xScale(2))
 		            .attr("height", 0.15*height/yDomain)
 		            .style("fill", "black");
+		var Main_TV = svg.append("text")
+						  .attr("x", xScale(3.5))
+						  .attr("y", yScale(0.25))
+						  .text("Large screen");
 		var door1 = svg.append("rect")
 	        .attr("x", xScale(8.45))
 	        .attr("y", yScale(2.20))
 	        .attr("width",xScale(0.07))
 	        .attr("height", 2.20*height/yDomain)
 	        .style("fill", "rgba(255,179,7,1)");
+	    var d1 = svg.append("text")
+						  .attr("x", xScale(8.1))
+						  .attr("y", yScale(1))
+						  .text("Door1");
 	    var door2 = svg.append("rect")
 	        .attr("x", xScale(8.45))
 	        .attr("y", yScale(12))
 	        .attr("width",xScale(0.07))
 	        .attr("height", 1.20*height/yDomain)
 	        .style("fill", "rgba(255,179,7,1)");
-
+	    var d1 = svg.append("text")
+						  .attr("x", xScale(8.1))
+						  .attr("y", yScale(11.5))
+						  .text("Door2");
 	    var mid_TableX = [3.39,4.0];
 	    var mid_TableY = [7.06,6];
 		for(var i=0; i<mid_TableX.length; i++){
@@ -259,7 +278,7 @@
 		        }
 			}
 		}
-		var ver1_tableX = [0.0, 7.89];
+		var ver1_tableX = [0.0, 7.79];
 		var ver1_tableY = [4.08, 5.15, 6.22, 7.29, 8.36, 9.434, 10.5];
 		for(var i=0; i<ver1_tableX.length; i++){
 			for(var j=0; j<ver1_tableY.length; j++){
@@ -280,10 +299,7 @@
 		        }
 		    }
 		}
-
-
-		
-		var circleData = [{ cx: xDomain/2, cy: yDomain/2, r: 0.1, color : "#8bc34a" }];
+		var circleData = [{ cx: xScale(6) , cy: yScale(8), r: 0.1, color : "#8bc34a" }];
 		var current_position = svg.selectAll("circle")
 		            .data(circleData)
 		             .enter()

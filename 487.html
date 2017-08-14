@@ -172,9 +172,6 @@
 		    .innerTickSize(-width)
 		    .outerTickSize(0)
 		    .tickPadding(10);
-		//190, 62, 15
-		//152.4, 61, 60.5 12, 10.13
-
 		var svg = d3.select("body").append("svg")
 		    .attr("width", w)
 		    .attr("height", h)
@@ -203,55 +200,86 @@
 		            .attr("width",xScale(2))
 		            .attr("height", 0.15*height/yDomain)
 		            .style("fill", "black");
+		var door1 = svg.append("rect")
+	        .attr("x", xScale(8.45))
+	        .attr("y", yScale(2.20))
+	        .attr("width",xScale(0.07))
+	        .attr("height", 2.20*height/yDomain)
+	        .style("fill", "rgba(255,179,7,1)");
+	    var door2 = svg.append("rect")
+	        .attr("x", xScale(8.45))
+	        .attr("y", yScale(12))
+	        .attr("width",xScale(0.07))
+	        .attr("height", 1.20*height/yDomain)
+	        .style("fill", "rgba(255,179,7,1)");
 
-		// for(var i=0; i<table331X.length; i++){
-		// 	for(var j=0; j<table331Y.length; j++){
-		// 		svg.append("rect")
-		//             .attr("x", table331X[i]*width/xDomain)
-		//             .attr("y", table331Y[j]*height/yDomain)
-		//             .attr("width",tableWidth*width/xDomain)
-		//             .attr("height", tableHeight*height/yDomain )
-		//             .style("fill", "rgba(255, 190, 7, 0.71)");
-		//         for(var g_i=table331X[i]*4-1; g_i<(table331X[i]+tableWidth)*4+1; g_i++){
-		//         	for(var g_j=table331Y[j]*4; g_j<(table331Y[j]+tableHeight)*4; g_j++){
-		//         		if(g_i>=0&&g_i<xDomain*4)
-		//         			grid.setWalkableAt(g_i, g_j, false);
-		//         		//console.log(g_i+", "+g_j);
-		//         // 		svg.append("text")
-		// 				    // .attr("x", ((g_i+1)/4)*width/xDomain)
-		// 				    // .attr("y", ((g_j+1)/4)*height/yDomain)
-		// 				    // //.attr("dy", ".35em")
-		// 				    // .text("1");
-		//         	}
-		//         }
-		// 	}
-		// }
-
-		// for(var i=0; i<chair331X.length; i++){
-		// 	for(var j=0; j<chair331Y.length; j++){
-		// 		svg.append("rect")
-		//     		.attr("x", chair331X[i]*width/xDomain)
-		//     		.attr("y", chair331Y[j]*height/yDomain)
-		//     		.attr("width", chair*width/xDomain)
-		//     		.attr("height", chair*height/yDomain)
-		//     		.style("fill", "blue");
-		//     	for(var g_i=chair331X[i]*4; g_i<(chair331X[i]+chair)*4; g_i++){
-		//         	for(var g_j=chair331Y[j]*4; g_j<(chair331Y[j]+chair)*4; g_j++){
-		//         		grid.setWalkableAt(g_i, g_j, false);
-		//         		if(g_i>=1&&g_i<47){
-		//         			grid.setWalkableAt(g_i-1, g_j, false);
-		//         			grid.setWalkableAt(g_i+1, g_j, false);
-		//         			//console.log(g_i+", "+g_j);
-		//         		}
-		//         // 			svg.append("text")
-		// 				    // .attr("x", (g_i/4)*width/xDomain)
-		// 				    // .attr("y", (g_j/4)*height/yDomain)
-		// 				    // //.attr("dy", ".35em")
-		// 				    // .text("1");
-		//         	}
-		//         }
-		// 	}
-		// }
+	    var mid_TableX = [3.39,4.0];
+	    var mid_TableY = [7.06,6];
+		for(var i=0; i<mid_TableX.length; i++){
+			for(var j=0; j<mid_TableY.length; j++){
+				svg.append("rect")
+		            .attr("x", mid_TableX[i]*width/xDomain)
+		            .attr("y", height-mid_TableY[j]*height/yDomain)
+		            .attr("width",0.61*width/xDomain)
+		            .attr("height", 1.07*height/yDomain)
+		            .style("fill", "rgba(158, 158, 158, 0.5)")
+		            .style('stroke', 'rgba(0,0,0,0.075)');
+		        for(var g_i=1.0/4*Math.floor(mid_TableX[i]*4)*4-1; g_i<1.0/4*Math.floor(((mid_TableX[i]+0.61)*4))*4+1; g_i++){
+		        	for(var g_j=yDomain*4-1.0/4*Math.floor(mid_TableY[j]*4)*4; g_j<yDomain*4-1.0/4*Math.floor(((mid_TableY[j]+1.07)*4))*4; g_j++){
+		        		if(g_i>=0&&g_i<xDomain*4)
+		        			grid.setWalkableAt(g_i, g_j, false);
+		        		//console.log(g_i+", "+g_j);
+		        // 		svg.append("text")
+						    // .attr("x", ((g_i+1)/4)*width/xDomain)
+						    // .attr("y", ((g_j+1)/4)*height/yDomain)
+						    // //.attr("dy", ".35em")
+						    // .text("1");
+		        	}
+		        }
+			}
+		}
+		var hor_tableX = [0.75, 1.82, 2.89, 3.96, 5.03, 6.1];
+		var hor_tableY = [12, 2.5];
+		for(var i=0; i<hor_tableX.length; i++){
+			for(var j=0; j<hor_tableY.length; j++){
+				svg.append("rect")
+		    		.attr("x", hor_tableX[i]*width/xDomain)
+		    		.attr("y", height-hor_tableY[j]*height/yDomain)
+		    		.attr("width", 1.07*width/xDomain)
+		    		.attr("height", 0.61*height/yDomain)
+		    		.style("fill", "rgba(158,158,158,0.5)")
+		    		.style("stroke", "rgba(0,0,0,0.075)");		    			        		
+		    	for(var g_i=1.0/4*Math.floor(hor_tableX[i]*4)*4-1; g_i<1.0/4*Math.floor((hor_tableX[i]+1.07)*4)*4+1; g_i++){
+		        	for(var g_j=1.0/4*Math.floor(12*4-hor_tableY[j]*4)*4; g_j<1.0/4*Math.floor(12*4-(hor_tableY[j]+0.61)*4)*4; g_j++){
+		        		console.log("Here");
+		        		if(g_i>=0&&g_i<xDomain*4&&g_j>=0&&g_j<yDomain*4)
+		        			console.log(g_i+", "+g_j);
+		        			grid.setWalkableAt(g_i, g_j, false);
+		        	}
+		        }
+			}
+		}
+		var ver1_tableX = [0.0, 7.89];
+		var ver1_tableY = [4.08, 5.15, 6.22, 7.29, 8.36, 9.434, 10.5];
+		for(var i=0; i<ver1_tableX.length; i++){
+			for(var j=0; j<ver1_tableY.length; j++){
+				svg.append("rect")
+		    		.attr("x", ver1_tableX[i]*width/xDomain)
+		    		.attr("y", height-ver1_tableY[j]*height/yDomain)
+		    		.attr("width", 0.61*width/xDomain)
+		    		.attr("height", 1.07*height/yDomain)
+		    		.style("fill", "rgba(158,158,158,0.5)")
+		    		.style("stroke", "rgba(0,0,0,0.075)");
+		    	for(var g_i=1.0/4*Math.floor(ver1_tableX[i]*4)*4-1; g_i<1.0/4*Math.floor((ver1_tableX[i]+0.61)*4)*4+1; g_i++){
+		        	for(var g_j=1.0/4*Math.floor(12*4-ver1_tableY[j]*4)*4; g_j<1.0/4*Math.floor(12*4-(ver1_tableY[j]+1.07)*4)*4; g_j++){
+		        		console.log("Here");
+		        		if(g_i>=0&&g_i<xDomain*4&&g_j>=0&&g_j<yDomain*4)
+		        			console.log(g_i+", "+g_j);
+		        			grid.setWalkableAt(g_i, g_j, false);
+		        	}
+		        }
+		    }
+		}
 
 
 		

@@ -85,7 +85,7 @@
             xDomain = 12,
             yDomain = 12;
         //console.log(h+" "+w)
-        var grid = new PF.Grid(xDomain*4, yDomain*4);
+        //var grid = new PF.Grid(xDomain*4, yDomain*4);
         var xScale = d3.scale.linear()
             .domain([0, xDomain])
             .range([0, width]);
@@ -205,7 +205,7 @@
                   .attr("r", function (d) { return d.r*width/xDomain; })
                   .style("fill", function (d) { return d.color; });
 
-        var socket = io.connect('http://ec2-54-67-48-199.us-west-1.compute.amazonaws.com:8000');
+        var socket = io.connect('http://ec2-54-219-182-57.us-west-1.compute.amazonaws.com:8000');
         socket.on('connect', function(data) {
         // socket.emit('join', 'Hello World from client');
         // console.log(data);
@@ -288,37 +288,37 @@
             console.log(shortPath.toString());
         }
 
-        // function startNav() {
-        //     var navPath = path;
-        //     if(directions_flag!=0){
-        //         responsiveVoice.speak("Start Navigation");
-        //         var updatePath = setInterval(function(){
-        //                                     var curr = [(1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4))*4, (yDomain*4)-(1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4))*4-1]
-        //                                     navPath.splice(0, 1, curr);
-        //                                     var next = navPath[1];
-        //                                     console.log()
-        //                                     if(navPath.length>1){
-        //                                         if((curr[0]>=next[0]-2&&curr[0]<=next[0]+2)&&(curr[1]>=next[1]-2&&curr[1]<=next[1]+2)&&navPath.length>2){
-        //                                             navPath.splice(1,1);
-        //                                         }
-        //                                     }                                           
-        //                                     svg.selectAll("path").remove();         
-        //                                     var pathGraph = svg.append("path")
-        //                                                         .attr("d", pathFunction(navPath));
-        //                                     if(navPath.length <= 2){
-        //                                         if((navPath[0][0]>=navPath[1][0]-1&&navPath[0][0]<=navPath[1][0]+1)&&(navPath[0][1]>=navPath[1][1]-1&&navPath[0][1]<=navPath[1][1]+1))
-        //                                         clearInterval(updatePath);
-        //                                         svg.selectAll("path").remove(); 
-        //                                     }
+        function startNav() {
+            var navPath = path;
+            if(directions_flag!=0){
+                responsiveVoice.speak("Start Navigation");
+                var updatePath = setInterval(function(){
+                                            var curr = [(1.0/4*Math.floor((xScale.invert(current_position.attr("cx")))*4))*4, (yDomain*4)-(1.0/4*Math.floor((yScale.invert(current_position.attr("cy")))*4))*4-1]
+                                            navPath.splice(0, 1, curr);
+                                            var next = navPath[1];
+                                            console.log()
+                                            if(navPath.length>1){
+                                                if((curr[0]>=next[0]-2&&curr[0]<=next[0]+2)&&(curr[1]>=next[1]-2&&curr[1]<=next[1]+2)&&navPath.length>2){
+                                                    navPath.splice(1,1);
+                                                }
+                                            }                                           
+                                            svg.selectAll("path").remove();         
+                                            var pathGraph = svg.append("path")
+                                                                .attr("d", pathFunction(navPath));
+                                            if(navPath.length <= 2){
+                                                if((navPath[0][0]>=navPath[1][0]-1&&navPath[0][0]<=navPath[1][0]+1)&&(navPath[0][1]>=navPath[1][1]-1&&navPath[0][1]<=navPath[1][1]+1))
+                                                clearInterval(updatePath);
+                                                svg.selectAll("path").remove(); 
+                                            }
 
-        //                                     if(directions_flag == 0){
-        //                                         svg.selectAll("path").remove(); 
-        //                                         clearInterval(updatePath);                                              
-        //                                     }
+                                            if(directions_flag == 0){
+                                                svg.selectAll("path").remove(); 
+                                                clearInterval(updatePath);                                              
+                                            }
                                              
-        //                                 }, 500);
-        //     }
-        // }
+                                        }, 500);
+            }
+        }
                 // var isFinished = false;
                 // var index = 0;
                 // while(!isFinished){
